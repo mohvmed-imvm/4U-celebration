@@ -691,6 +691,7 @@ observeReveals();
     "بدون إعلانات": "Ad-free",
     "رابط سهل المشاركة": "Easy-to-share link",
     "تخصيص حسب طلبك": "Customized for you",
+    "خصوصية كاملة": "Complete privacy",
     "من الفكرة لحد": "From an idea to the",
     "المفاجأة": "surprise",
     "اختار التصميم": "Choose a design",
@@ -746,6 +747,12 @@ observeReveals();
       "Customized for you",
       "نتفق على التفاصيل والرسالة والألوان والصور المناسبة قبل تجهيز نسختك.",
       "We agree on the details, message, colors, and photos before creating your version."
+    ]
+    [
+      "خصوصية كاملة",
+      "Complete privacy",
+      "خصوصيتك أولويتنا؛ لا نحتفظ بالصور أو المعلومات الشخصية، ولا يمكن لأحد رؤيتها. يتم حذف موقعك وبياناته من منصتنا خلال 10 أيام من إصداره.",
+      "Your privacy comes first. We don't retain photos or personal information, and no one else can view them. Your website and its data are deleted from our platform within 10 days of creation."
     ]
   ];
 
