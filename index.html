@@ -1,0 +1,417 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <script type="module" src="https://unpkg.com/ionicons@8.0.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@8.0.0/dist/ionicons/ionicons.js"></script>
+  <script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100c1c">
+  <meta name="description" content="4U celebrations - مواقع هدايا رقمية مميزة لكل مناسبة، بتصميمات تفاعلية وذكريات لا تُنسى.">
+  <title>4U celebrations | Make Moments Unforgettable</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body id="top">
+
+  <div class="ambient one"></div>
+  <div class="ambient two"></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <!-- Header -->
+  <header class="header" id="header">
+    <div class="container header-inner">
+
+      <a href="#top" class="brand" aria-label="4U celebrations - الرئيسية">
+        <div class="brand-symbol">4U</div>
+        <div class="brand-name">
+          celebrations
+          <span>MAKE IT SPECIAL</span>
+        </div>
+      </a>
+
+<div class="settings-wrap">
+  <button
+    class="settings-btn"
+    id="settingsToggle"
+    type="button"
+    aria-label="Settings"
+    aria-expanded="false"
+    title="Settings"
+  >
+    <svg viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="1.7"
+         stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="m19.4 15 .1.1 1.4 1.1-1.5 2.6-1.7-.7a8 8 0 0 1-1.7 1l-.3 1.9h-3l-.3-1.9a8 8 0 0 1-1.7-1l-1.7.7-1.5-2.6 1.4-1.1a7 7 0 0 1 0-2l-1.4-1.1 1.5-2.6 1.7.7a8 8 0 0 1 1.7-1l.3-1.9h3l.3 1.9a8 8 0 0 1 1.7 1l1.7-.7 1.5 2.6-1.4 1.1a7 7 0 0 1 0 1.9Z"
+      transform="translate(-1 -1) scale(1.08)"/>
+    </svg>
+  </button>
+
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-heading" data-setting-title>الإعدادات</div>
+
+    <label class="settings-label" data-language-label>لغة الموقع</label>
+    <div class="settings-options">
+      <button class="settings-option active" data-language="ar" type="button">العربية</button>
+      <button class="settings-option" data-language="en" type="button">English</button>
+    </div>
+
+    <label class="settings-label" data-theme-label>مظهر الموقع</label>
+    <div class="settings-options">
+      <button class="settings-option active" data-theme="dark" type="button">
+            <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5a8.5 8.5 0 1 0 12 12Z"
+        fill="none" stroke="currentColor" stroke-width="1.8"
+        stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+        <span data-theme-dark-label>داكن</span>
+      </button>
+      <button class="settings-option" data-theme="light" type="button">
+        <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" fill="none"
+        stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"
+        fill="none" stroke="currentColor" stroke-width="1.8"
+        stroke-linecap="round"/>
+    </svg>
+        <span data-theme-light-label>فاتح</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+      <nav class="nav" aria-label="القائمة الرئيسية">
+        <a href="#top">الرئيسية</a>
+        <a href="#templates">التصميمات</a>
+        <a href="#features">مميزاتنا</a>
+        <a href="#how">طريقة الطلب</a>
+      </nav>
+
+      <a href="#contact" class="header-cta">
+        خلينا نبدأ
+        <span>↙</span>
+      </a>
+
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Hero -->
+    <section class="container hero">
+
+      <div class="hero-content reveal-right">
+
+        <div class="eyebrow">
+          <span class="eyebrow-dot"></span>
+          كل مناسبة تستاهل حاجة مختلفة
+        </div>
+
+        <h1>
+          مش مجرد هدية<br>
+          دي <span class="gradient-text">ذكرى بتعيش</span>
+        </h1>
+
+        <p class="hero-description">
+          تخيل إنك تهدي شخص بتحبه موقع معمول مخصوص عشانه
+          فيه رسالتك وصوركم وتفاصيلكم المميزة
+          واغاني بتحبوها سوا وكل ده في تجربة تفاعلية تخلي لحظته مختلفة فعلًا
+          وده بالظبط اللي بنعمله في 4U celebrations
+        </p>
+
+        <div class="hero-actions">
+          <a href="#templates" class="btn btn-primary">
+            شوف التصميمات
+            <span>↓</span>
+          </a>
+
+          <a href="#contact" class="btn btn-secondary">
+            <span>♡</span>
+            اعمل هديتك علي مزاجك
+          </a>
+        </div>
+
+        <p class="hero-note">
+          ✦ عيد ميلاد · ذكرى سنوية · تخرج · إنجازات ومناسبات خاصة
+        </p>
+
+      </div>
+
+      <div class="hero-visual reveal-left">
+
+        <div class="orbit"></div>
+        <div class="orbit orbit-two"></div>
+
+        <div class="showcase">
+          <div class="showcase-inner">
+
+            <span class="showcase-sparkle">✦</span>
+            <span class="showcase-kicker">A SPECIAL MOMENT</span>
+
+            <div class="showcase-cake">🎂</div>
+
+            <div class="showcase-title">Made for you</div>
+
+            <p class="showcase-caption">
+              A little website. A lifetime memory.
+            </p>
+
+            <span class="showcase-sparkle" style="margin-top:20px">♡</span>
+
+          </div>
+        </div>
+
+        <div class="floating-badge first">
+          <div class="badge-icon">✧</div>
+          <div class="badge-text">
+            <strong>تصميم مخصوص</strong>
+            <span>كل تفصيلة على ذوقك</span>
+          </div>
+        </div>
+
+        <div class="floating-badge second">
+          <div class="badge-icon">♡</div>
+          <div class="badge-text">
+            <strong>ذكرى مختلفة</strong>
+            <span>تستاهل تتفتح أكتر من مرة</span>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- Stats: عدّل الأرقام حسب الواقع -->
+    <div class="container stats reveal">
+      <div class="stat">
+        <strong data-count="3" data-suffix="+">0</strong>
+        <span>تصميمات متاحة حاليًا</span>
+      </div>
+
+      <div class="stat">
+        <strong data-count="6" data-suffix="+">0</strong>
+        <span>أنواع مناسبات ممكنة</span>
+      </div>
+
+      <div class="stat">
+        <strong>24/7</strong>
+        <span>رابط تقدر تشاركه</span>
+      </div>
+    </div>
+
+    <!-- Templates -->
+    <section class="container section" id="templates">
+
+      <div class="section-heading reveal">
+        <div>
+          <div class="section-kicker">THE COLLECTION</div>
+          <h2>اختار الهدية اللي <span class="gradient-text">تناسبك</span></h2>
+          <p>
+            شوف التصميمات المتاحة وافتح المعاينة بنفسك
+            وكل تصميم تقدر تبدأ منه وتخصصه على حسب مناسبتك
+          </p>
+        </div>
+
+        <div class="section-count" id="templateCount">03 DESIGNS</div>
+      </div>
+
+      <div class="filters reveal" id="filters">
+        <button class="filter-btn active" data-filter="all">كل التصميمات</button>
+        <button class="filter-btn" data-filter="birthday">أعياد الميلاد</button>
+        <button class="filter-btn" data-filter="love">اعياد حب</button>
+        <button class="filter-btn" data-filter="achievement">الإنجازات</button>
+      </div>
+
+      <div class="templates-grid" id="templatesGrid">
+
+        <!--
+          الكروت بتتولد تلقائيًا من مصفوفة templates في JavaScript تحت.
+          لإضافة تصميم جديد، أضف عنصرًا واحدًا هناك فقط.
+        -->
+
+      </div>
+
+      <div class="add-note reveal">
+        <span>✦</span>
+        <div>
+          <strong>لسه في تصميمات جاية</strong>
+          <br>
+          المجموعة دي قابلة للتجديد باستمرار
+          وهتلاقي هنا أي تصميم جديد نضيفه للمناسبات المختلفة
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Features -->
+    <section class="container section" id="features">
+
+      <div class="section-heading reveal">
+        <div>
+          <div class="section-kicker">WHY 4U</div>
+          <h2>التفاصيل الصغيرة هي اللي<span class="gradient-text"> بتفرق</span></h2>
+          <p>مش بنقدم مجرد لينك، بنصمم تجربة رقمية متفصلة على المناسبة والشخص اللي هتفرحه</p>
+        </div>
+      </div>
+
+      <div class="features-grid">
+
+        <article class="feature reveal">
+          <div class="feature-icon">✧</div>
+          <h3>تصميم مميز</h3>
+          <p>ألوان وحركات وتفاصيل بصرية مناسبة لجو المناسبة بدل شكل تقليدي مكرر.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="feature-icon">♡</div>
+          <h3>رسالتك وصوركم</h3>
+          <p>خلي الموقع يحكي حكايتكم برسالة خاصة وصور ولحظات تختارها بنفسك.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="feature-icon">⌁</div>
+          <h3>تجربة تفاعلية</h3>
+          <p>مفاجآت وحركات وانتقالات تخلي اكتشاف الهدية جزءًا من متعتها.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="feature-icon">⊘</div>
+          <h3>بدون إعلانات</h3>
+          <p>تصميم متجاوب يراعي شاشات الموبايلات والأجهزة المختلفة.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="feature-icon">↗</div>
+          <h3>رابط سهل المشاركة</h3>
+          <p>تقدر تبعت رابط الموقع للشخص اللي هتقدم له الهدية على واتساب أو غيره.</p>
+        </article>
+
+        <article class="feature reveal">
+          <div class="feature-icon">✦</div>
+          <h3>تخصيص حسب طلبك</h3>
+          <p>نتفق على التفاصيل والرسالة والألوان والصور المناسبة قبل تجهيز نسختك.</p>
+        </article>
+
+      </div>
+
+    </section>
+
+    <!-- How it works -->
+    <section class="container section" id="how">
+
+      <div class="section-heading reveal">
+        <div>
+          <div class="section-kicker">HOW IT WORKS</div>
+          <h2>من الفكرة لحد <span class="gradient-text">المفاجأة</span></h2>
+          <p>خطوات بسيطة عشان توصل لهدية مختلفة من غير تعقيد</p>
+        </div>
+      </div>
+
+      <div class="steps">
+
+        <article class="step reveal">
+          <h3>اختار التصميم</h3>
+          <p>اتفرج على المعاينات واختار الشكل الأقرب للمناسبة اللي في بالك.</p>
+        </article>
+
+        <article class="step reveal">
+          <h3>ابعت التفاصيل</h3>
+          <p>كلمنا على واتساب عشان نتفق على الاسم والرسالة والصور وأي تعديلات.</p>
+        </article>
+
+        <article class="step reveal">
+          <h3>استلم رابط هديتك</h3>
+          <p>بعد الاتفاق على التفاصيل والسعر , تستلم رابط موقعك في نص ساعه وتقدر تشاركه.</p>
+        </article>
+
+      </div>
+
+    </section>
+
+    <!-- Contact -->
+    <section class="container contact-section" id="contact">
+
+      <div class="contact-banner reveal">
+
+        <div class="section-kicker" style="text-align:center">
+          LET'S CREATE SOMETHING SPECIAL
+        </div>
+
+        <h2>
+          عندك مناسبة في بالك؟<br>
+          <span class="gradient-text">يلا نعملها هدية </span>
+        </h2>
+
+        <p>
+          مش لاقي التصميم المناسب؟ عندك فكرة مختلفة؟
+          ابعتلنا على واتساب واحكيلنا عن المناسبة
+          ونشوف أنسب طريقة ننفذ بيها فكرتك
+        </p>
+
+        <div class="contact-actions">
+
+          <a href="https://wa.me/201040275280" class="btn whatsapp-btn" id="mainWhatsApp" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
+              <path d="M20.5 11.8a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.4-4.9A8.4 8.4 0 1 1 20.5 11.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+              <path d="M8.4 7.8c.3-.5.6-.5.9-.5h.5c.2 0 .4.1.5.5l.7 1.6c.1.2.1.4-.1.6l-.6.7c-.2.2-.2.4-.1.6.5 1 1.3 1.8 2.3 2.3.2.1.4.1.6-.1l.8-.9c.2-.2.4-.2.6-.1l1.6.8c.3.1.4.3.4.5-.1.7-.4 1.4-.9 1.7-.5.4-1.2.6-2 .4-1.2-.3-2.6-1-4-2.4-1.4-1.4-2.1-2.8-2.3-4-.1-.7.2-1.3.5-1.7Z" fill="currentColor"/>
+            </svg>
+            كلمنا على واتساب
+          </a>
+
+          <a href="#templates" class="btn btn-secondary">
+            شوف التصميمات تاني
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- Social links -->
+    <section class="container social-section">
+
+      <h2 class="social-title reveal">خليك قريب من 4U</h2>
+      <p class="social-description reveal">
+        تابعنا وشوف أحدث التصميمات والأفكار الجديدة
+      </p>
+
+      <div class="social-links reveal" id="socialLinks">
+
+        <!-- الروابط والأيقونات بتتولد من JavaScript -->
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-inner">
+
+      <div class="footer-brand">
+        <strong>4U</strong> celebrations
+      </div>
+
+      <p class="footer-note">
+        Made with ♡ for your special moments
+      </p>
+
+      <a href="#top" class="back-top">
+        ارجع لفوق ↑
+      </a>
+
+    </div>
+  </footer>
+
+<script src="script.js"></script>
+<script type="module" src="https://unpkg.com/ionicons@8.0.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@8.0.0/dist/ionicons/ionicons.js"></script>
+</body>
+</html>
