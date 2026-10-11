@@ -685,13 +685,13 @@ observeReveals();
     "لسه في تصميمات جاية": "More designs are coming",
     "التفاصيل الصغيرة هي اللي": "The little details make the",
     "بتفرق": "difference",
+    "خصوصية كاملة": "Complete privacy",
     "تصميم مميز": "Unique design",
     "رسالتك وصوركم": "Your message and photos",
-    "تجربة تفاعلية": "Interactive experience",
     "بدون إعلانات": "Ad-free",
     "رابط سهل المشاركة": "Easy-to-share link",
     "تخصيص حسب طلبك": "Customized for you",
-    "خصوصية كاملة": "Complete privacy",
+    "تجربة تفاعلية": "Interactive experience",
     "من الفكرة لحد": "From an idea to the",
     "المفاجأة": "surprise",
     "اختار التصميم": "Choose a design",
@@ -713,6 +713,12 @@ observeReveals();
 
   const featureTranslations = [
     [
+      "خصوصية كاملة",
+      "Complete privacy",
+      "خصوصيتك أولويتنا؛ لا نحتفظ بالصور أو المعلومات الشخصية، ولا يمكن لأحد رؤيتها. يتم حذف موقعك وبياناته من منصتنا خلال 10 أيام من إصداره.",
+      "Your privacy comes first. We don't retain photos or personal information, and no one else can view them. Your website and its data are deleted from our platform within 10 days of creation."
+    ],
+    [
       "تصميم مميز",
       "Unique design",
       "ألوان وحركات وتفاصيل بصرية مناسبة لجو المناسبة بدل شكل تقليدي مكرر.",
@@ -723,12 +729,6 @@ observeReveals();
       "Your message and photos",
       "خلي الموقع يحكي حكايتكم برسالة خاصة وصور ولحظات تختارها بنفسك.",
       "Tell your story with a personal message, photos, and moments you choose."
-    ],
-    [
-      "تجربة تفاعلية",
-      "Interactive experience",
-      "مفاجآت وحركات وانتقالات تخلي اكتشاف الهدية جزءًا من متعتها.",
-      "Surprises and transitions that make discovering the gift part of the fun."
     ],
     [
       "بدون إعلانات",
@@ -749,11 +749,11 @@ observeReveals();
       "We agree on the details, message, colors, and photos before creating your version."
     ]
     [
-      "خصوصية كاملة",
-      "Complete privacy",
-      "خصوصيتك أولويتنا؛ لا نحتفظ بالصور أو المعلومات الشخصية، ولا يمكن لأحد رؤيتها. يتم حذف موقعك وبياناته من منصتنا خلال 10 أيام من إصداره.",
-      "Your privacy comes first. We don't retain photos or personal information, and no one else can view them. Your website and its data are deleted from our platform within 10 days of creation."
-    ]
+      "تجربة تفاعلية",
+      "Interactive experience",
+      "مفاجآت وحركات وانتقالات تخلي اكتشاف الهدية جزءًا من متعتها.",
+      "Surprises and transitions that make discovering the gift part of the fun."
+    ],
   ];
 
   const stepTranslations = [
