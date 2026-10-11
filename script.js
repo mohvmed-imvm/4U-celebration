@@ -21,7 +21,7 @@ const CONFIG = {
     },
     {
       name: "Facebook",
-      url: "https://www.facebook.com/YOUR_USERNAME",
+      url: "https://www.facebook.com/profile.php?id=100089993876704",
       color: "#8FB9FF",
       icon: "facebook"
     }
