@@ -47,12 +47,28 @@ const templates = [
     previewCaption: "A little magic just for you",
     theme: "theme-birthday-girl",
     type: "مناسبة شخصية",
-    url: "https://mohvmed-imvm.github.io/birthday-1/",
+    url: "https://mohvmed-imvm.github.io/birthdayGirl-1/",
+    message: "عايز أطلب تصميم عيد ميلاد بنوتة"
+  },
+    {
+    id: "birthday-boy",
+    number: "02",
+    title: "عيد ميلاد ولد",
+    category: "birthday",
+    categoryName: "أعياد الميلاد",
+    description: "هدية فيها عد تنازلي وهدية ورسالة وصور وموسيقى حسب اختيارك.",
+    emoji: "🎂",
+    miniBrand: "HAPPY BIRTHDAY",
+    previewTitle: "It's your day",
+    previewCaption: "A little magic just for you",
+    theme: "theme-birthday-boy",
+    type: "مناسبة شخصية",
+    url: "https://mohvmed-imvm.github.io/birthdayBoy-1/",
     message: "عايز أطلب تصميم عيد ميلاد بنوتة"
   },
   {
     id: "anniversary",
-    number: "02",
+    number: "03",
     title: "ذكرى حب وجواز",
     category: "love",
     categoryName: "اعياد حب",
@@ -63,12 +79,28 @@ const templates = [
     previewCaption: "Every moment means something",
     theme: "theme-anniversary",
     type: "ذكرى خاصة",
-    url: "https://mohvmed-imvm.github.io/birthday-2/",
+    url: "https://mohvmed-imvm.github.io/ValentineDay-1/",
+    message: "عايز أطلب تصميم ذكرى حب أو عيد جواز"
+  },
+  {
+    id: "anniversaryy",
+    number: "04",
+    title: "عيد حب",
+    category: "love",
+    categoryName: "اعياد حب",
+    description: "تصميم رومانسي للذكرى السنوية أو عيد الجواز، برسالة وصور وتفاصيل خاصة.",
+    emoji: "🌹",
+    miniBrand: "OUR STORY",
+    previewTitle: "♡Us, Always",
+    previewCaption: "Every moment means something",
+    theme: "theme-custom",
+    type: "ذكرى خاصة",
+    url: "https://mohvmed-imvm.github.io/ValentineDay-2/",
     message: "عايز أطلب تصميم ذكرى حب أو عيد جواز"
   },
   {
     id: "graduation",
-    number: "03",
+    number: "05",
     title: "التخرج والنجاح",
     category: "achievement",
     categoryName: "الإنجازات",
@@ -79,7 +111,7 @@ const templates = [
     previewCaption: "Your hard work deserves a moment",
     theme: "theme-graduation",
     type: "إنجاز مهم",
-    url: "https://mohvmed-imvm.github.io/birthday-3/",
+    url: "https://mohvmed-imvm.github.io/SOON/",
     message: "عايز أطلب تصميم تخرج أو نجاح"
   }
 ];
@@ -601,6 +633,14 @@ observeReveals();
 
     anniversary: {
       title: "ذكرى حب وجواز",
+      categoryName: "اعياد حب",
+      description: "تصميم رومانسي للذكرى السنوية أو عيد الجواز، برسالة وصور وتفاصيل خاصة.",
+      type: "ذكرى خاصة",
+      message: "عايز أطلب تصميم ذكرى حب أو عيد جواز"
+    },
+    
+    anniversaryy: {
+      title: "عيد حب",
       categoryName: "اعياد حب",
       description: "تصميم رومانسي للذكرى السنوية أو عيد الجواز، برسالة وصور وتفاصيل خاصة.",
       type: "ذكرى خاصة",
