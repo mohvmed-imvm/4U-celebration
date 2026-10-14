@@ -1346,6 +1346,7 @@ if (lightLabel) {
 })();
 
 
+
 /* =====================================================
    13) مشترياتي - 4U celebrations
    ===================================================== */
@@ -1356,14 +1357,12 @@ if (lightLabel) {
   const API_URL =
     "https://dgnigcvomzhpdfzccbem.supabase.co/functions/v1/smooth-action";
 
-  const MAX_ATTEMPTS = 3;
-  const LOCK_DURATION = 3 * 60 * 1000;
-
-  const FAILED_KEY = "4u-purchases-failed-attempts";
-  const LOCK_KEY = "4u-purchases-lock-until";
+  const LOCK_KEY = "4u-purchases-server-lock-until";
+  const CLIENT_KEY = "4u-purchase-client-key";
 
   let activeTimer = null;
   let lockTimer = null;
+  let serverLockUntil = 0;
   let lastResult = null;
   let currentRequest = false;
 
@@ -1400,8 +1399,6 @@ if (lightLabel) {
       invalidResponse: "وصلتنا استجابة غير متوقعة. حاول تاني بعد شوية.",
       locked: "تم إيقاف المحاولات مؤقتًا بسبب إدخال كود خاطئ 3 مرات.",
       lockRemaining: "تقدر تحاول تاني بعد",
-      attemptsRemaining: "المحاولات المتبقية",
-      attempt: "محاولة",
       lockExpired: "تقدر تجرب كود الدخول دلوقتي."
     },
 
@@ -1432,40 +1429,50 @@ if (lightLabel) {
       invalidResponse: "We received an unexpected response. Please try again shortly.",
       locked: "Attempts have been temporarily blocked after 3 incorrect codes.",
       lockRemaining: "You can try again in",
-      attemptsRemaining: "Attempts remaining",
-      attempt: "attempts",
       lockExpired: "You can try your access code now."
     }
   };
 
   const t = key => words[getLanguage()][key] || key;
 
-  /* ---------- نظام المحاولات والقفل ---------- */
+  /* ---------- مفتاح العميل والقفل من السيرفر ---------- */
 
-  function getFailedAttempts() {
-    const value = Number(localStorage.getItem(FAILED_KEY) || 0);
+  function getClientKey() {
+    let key = localStorage.getItem(CLIENT_KEY);
 
-    return Number.isFinite(value) && value >= 0
-      ? Math.floor(value)
-      : 0;
-  }
+    if (key && /^[A-Za-z0-9-]{16,100}$/.test(key)) {
+      return key;
+    }
 
-  function saveFailedAttempts(value) {
-    localStorage.setItem(FAILED_KEY, String(value));
+    if (
+      typeof crypto !== "undefined" &&
+      typeof crypto.randomUUID === "function"
+    ) {
+      key = crypto.randomUUID();
+    } else {
+      const randomPart = Array.from(
+        { length: 4 },
+        () => Math.random().toString(36).slice(2)
+      ).join("");
+
+      key = "4u-" + randomPart + "-" + Date.now().toString(36);
+    }
+
+    localStorage.setItem(CLIENT_KEY, key);
+    return key;
   }
 
   function getLockUntil() {
     const value = Number(localStorage.getItem(LOCK_KEY) || 0);
-
     return Number.isFinite(value) ? value : 0;
   }
 
   function isLocked() {
-    return getLockUntil() > Date.now();
+    return serverLockUntil > Date.now();
   }
 
   function resetAttempts() {
-    localStorage.removeItem(FAILED_KEY);
+    serverLockUntil = 0;
     localStorage.removeItem(LOCK_KEY);
 
     if (lockTimer !== null) {
@@ -1474,7 +1481,7 @@ if (lightLabel) {
     }
 
     input.disabled = false;
-    submit.disabled = false;
+    submit.disabled = currentRequest;
   }
 
   function formatLockRemaining(milliseconds) {
@@ -1486,18 +1493,20 @@ if (lightLabel) {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
 
-    return isEnglish()
-      ? `${minutes}:${String(seconds).padStart(2, "0")}`
-      : `${minutes}:${String(seconds).padStart(2, "0")}`;
+    return `${minutes}:${String(seconds).padStart(2, "0")}`;
   }
 
   function updateLockUI() {
-    const remaining = getLockUntil() - Date.now();
+    const remaining = serverLockUntil - Date.now();
 
     if (remaining <= 0) {
-      resetAttempts();
-      setStatus(t("lockExpired"), "info");
-      submit.textContent = t("submit");
+      serverLockUntil = 0;
+      localStorage.removeItem(LOCK_KEY);
+
+      input.disabled = false;
+      submit.disabled = currentRequest;
+      submit.textContent = currentRequest ? t("loading") : t("submit");
+
       return false;
     }
 
@@ -1513,13 +1522,17 @@ if (lightLabel) {
     return true;
   }
 
-  function startLock() {
-    localStorage.setItem(
-      LOCK_KEY,
-      String(Date.now() + LOCK_DURATION)
-    );
+  function startLock(lockedUntil) {
+    const timestamp = new Date(lockedUntil).getTime();
 
-    saveFailedAttempts(MAX_ATTEMPTS);
+    if (!Number.isFinite(timestamp) || timestamp <= Date.now()) {
+      setStatus(t("locked"), "error");
+      return;
+    }
+
+    serverLockUntil = timestamp;
+
+    localStorage.setItem(LOCK_KEY, String(timestamp));
 
     updateLockUI();
 
@@ -1537,26 +1550,12 @@ if (lightLabel) {
     }, 1000);
   }
 
-  function recordFailedAttempt() {
-    const attempts = getFailedAttempts() + 1;
-
-    if (attempts >= MAX_ATTEMPTS) {
-      startLock();
-      return;
-    }
-
-    saveFailedAttempts(attempts);
-
-    const remaining = MAX_ATTEMPTS - attempts;
-
-    setStatus(
-      `${t("invalid")} ${t("attemptsRemaining")}: ${remaining}`,
-      "error"
-    );
-  }
-
   function initializeLock() {
-    if (isLocked()) {
+    const savedLock = getLockUntil();
+
+    if (savedLock > Date.now()) {
+      serverLockUntil = savedLock;
+
       updateLockUI();
 
       lockTimer = setInterval(() => {
@@ -1567,12 +1566,8 @@ if (lightLabel) {
           lockTimer = null;
         }
       }, 1000);
-
-      return;
-    }
-
-    if (getLockUntil() > 0) {
-      resetAttempts();
+    } else {
+      localStorage.removeItem(LOCK_KEY);
     }
   }
 
@@ -2016,7 +2011,7 @@ if (lightLabel) {
 
       if (typeof openWhatsApp === "function") {
         openWhatsApp(message);
-      } else {
+      } else if (typeof CONFIG !== "undefined" && CONFIG.whatsappNumber) {
         window.open(
           "https://wa.me/" + CONFIG.whatsappNumber +
           "?text=" + encodeURIComponent(message),
@@ -2113,8 +2108,10 @@ if (lightLabel) {
   form.addEventListener("submit", async event => {
     event.preventDefault();
 
-    if (currentRequest || isLocked()) {
-      if (isLocked()) updateLockUI();
+    if (currentRequest) return;
+
+    if (isLocked()) {
+      updateLockUI();
       return;
     }
 
@@ -2123,20 +2120,6 @@ if (lightLabel) {
     resultBox.replaceChildren();
     clearTimer();
     lastResult = null;
-
-    if (!/^[A-Za-z0-9-]{8,100}$/.test(code)) {
-      recordFailedAttempt();
-
-      if (!isLocked()) {
-        setStatus(
-          `${t("invalid")} ${t("attemptsRemaining")}: ${MAX_ATTEMPTS - getFailedAttempts()}`,
-          "error"
-        );
-      }
-
-      input.focus();
-      return;
-    }
 
     currentRequest = true;
     submit.disabled = true;
@@ -2149,7 +2132,10 @@ if (lightLabel) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ code })
+        body: JSON.stringify({
+          code,
+          client_key: getClientKey()
+        })
       });
 
       let data;
@@ -2160,8 +2146,17 @@ if (lightLabel) {
         throw new Error("invalid_response");
       }
 
-      if (response.status === 400 || response.status === 404) {
-        recordFailedAttempt();
+      /* السيرفر هو المسؤول عن القفل وعدّ المحاولات */
+      if (response.status === 429 && data?.error === "locked") {
+        startLock(data.locked_until);
+        return;
+      }
+
+      if (
+        (response.status === 400 || response.status === 404) &&
+        data?.error === "invalid_code"
+      ) {
+        setStatus(t("invalid"), "error");
         return;
       }
 
@@ -2192,12 +2187,12 @@ if (lightLabel) {
     } finally {
       currentRequest = false;
 
-      if (!isLocked()) {
+      if (isLocked()) {
+        updateLockUI();
+      } else {
         submit.disabled = false;
         input.disabled = false;
         submit.textContent = t("submit");
-      } else {
-        updateLockUI();
       }
     }
   });
@@ -2205,8 +2200,6 @@ if (lightLabel) {
   /* ---------- دعم تغيير اللغة ---------- */
 
   function updatePurchasesLanguage() {
-    const english = isEnglish();
-
     const title = section.querySelector("[data-purchases-title]");
     const subtitle = section.querySelector("[data-purchases-subtitle]");
     const label = section.querySelector("[data-purchases-label]");
@@ -2267,3 +2260,4 @@ if (lightLabel) {
   initializeLock();
 
 })();
+
