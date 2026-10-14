@@ -787,7 +787,7 @@ observeReveals();
       "Customized for you",
       "نتفق على التفاصيل والرسالة والألوان والصور المناسبة قبل تجهيز نسختك.",
       "We agree on the details, message, colors, and photos before creating your version."
-    ]
+    ],
     [
       "تجربة تفاعلية",
       "Interactive experience",
@@ -1342,5 +1342,928 @@ if (lightLabel) {
 
   applyTheme();
   applyLanguage();
+
+})();
+
+
+/* =====================================================
+   13) مشترياتي - 4U celebrations
+   ===================================================== */
+
+(() => {
+  "use strict";
+
+  const API_URL =
+    "https://dgnigcvomzhpdfzccbem.supabase.co/functions/v1/smooth-action";
+
+  const MAX_ATTEMPTS = 3;
+  const LOCK_DURATION = 3 * 60 * 1000;
+
+  const FAILED_KEY = "4u-purchases-failed-attempts";
+  const LOCK_KEY = "4u-purchases-lock-until";
+
+  let activeTimer = null;
+  let lockTimer = null;
+  let lastResult = null;
+  let currentRequest = false;
+
+  const getLanguage = () =>
+    document.documentElement.lang === "en" ? "en" : "ar";
+
+  const isEnglish = () => getLanguage() === "en";
+
+  const words = {
+    ar: {
+      nav: "مشترياتي",
+      title: "مشترياتي",
+      subtitle: "معاك كود الدخول اللي وصلك من 4U؟ اكتبه هنا عشان تشوف هديتك",
+      label: "كود الدخول",
+      placeholder: "اكتب كود الدخول هنا",
+      submit: "عرض مشترياتي",
+      loading: "بنتحقق من الكود...",
+      invalid: "كود الدخول غير صحيح. راجع الكود وجرب تاني.",
+      serverError: "حصلت مشكلة أثناء الاتصال. جرب كمان شوية.",
+      networkError: "مش قادرين نتصل بالخدمة دلوقتي. اتأكد من الإنترنت وجرب تاني.",
+      active: "هديتك جاهزة 🎁",
+      design: "نوع التصميم",
+      expires: "تاريخ انتهاء الصلاحية",
+      remaining: "الوقت المتبقي",
+      open: "افتح هديتك",
+      expiredTitle: "انتهت صلاحية هديتك",
+      expiredText: "انتهت مدة إتاحة الموقع. تقدر تجدد طلبك وتحصل على خصم 30% بصفتك من عملاء 4U السابقين.",
+      renew: "جدد هديتك بخصم 30%",
+      days: "يوم",
+      hours: "ساعة",
+      minutes: "دقيقة",
+      seconds: "ثانية",
+      lessThanMinute: "أقل من دقيقة",
+      invalidResponse: "وصلتنا استجابة غير متوقعة. حاول تاني بعد شوية.",
+      locked: "تم إيقاف المحاولات مؤقتًا بسبب إدخال كود خاطئ 3 مرات.",
+      lockRemaining: "تقدر تحاول تاني بعد",
+      attemptsRemaining: "المحاولات المتبقية",
+      attempt: "محاولة",
+      lockExpired: "تقدر تجرب كود الدخول دلوقتي."
+    },
+
+    en: {
+      nav: "My Purchases",
+      title: "My Purchases",
+      subtitle: "Enter the access code you received from 4U to view your gift.",
+      label: "Access code",
+      placeholder: "Enter your access code",
+      submit: "View my purchase",
+      loading: "Checking your code...",
+      invalid: "This access code is incorrect. Check it and try again.",
+      serverError: "Something went wrong. Please try again shortly.",
+      networkError: "We couldn't connect to the service. Check your internet and try again.",
+      active: "Your gift is ready 🎁",
+      design: "Design",
+      expires: "Expiration date",
+      remaining: "Time remaining",
+      open: "Open your gift",
+      expiredTitle: "Your gift has expired",
+      expiredText: "Your website is no longer available. As a returning 4U customer, you can renew your order with a 30% discount.",
+      renew: "Renew with 30% off",
+      days: "days",
+      hours: "hours",
+      minutes: "minutes",
+      seconds: "seconds",
+      lessThanMinute: "Less than a minute",
+      invalidResponse: "We received an unexpected response. Please try again shortly.",
+      locked: "Attempts have been temporarily blocked after 3 incorrect codes.",
+      lockRemaining: "You can try again in",
+      attemptsRemaining: "Attempts remaining",
+      attempt: "attempts",
+      lockExpired: "You can try your access code now."
+    }
+  };
+
+  const t = key => words[getLanguage()][key] || key;
+
+  /* ---------- نظام المحاولات والقفل ---------- */
+
+  function getFailedAttempts() {
+    const value = Number(localStorage.getItem(FAILED_KEY) || 0);
+
+    return Number.isFinite(value) && value >= 0
+      ? Math.floor(value)
+      : 0;
+  }
+
+  function saveFailedAttempts(value) {
+    localStorage.setItem(FAILED_KEY, String(value));
+  }
+
+  function getLockUntil() {
+    const value = Number(localStorage.getItem(LOCK_KEY) || 0);
+
+    return Number.isFinite(value) ? value : 0;
+  }
+
+  function isLocked() {
+    return getLockUntil() > Date.now();
+  }
+
+  function resetAttempts() {
+    localStorage.removeItem(FAILED_KEY);
+    localStorage.removeItem(LOCK_KEY);
+
+    if (lockTimer !== null) {
+      clearInterval(lockTimer);
+      lockTimer = null;
+    }
+
+    input.disabled = false;
+    submit.disabled = false;
+  }
+
+  function formatLockRemaining(milliseconds) {
+    const totalSeconds = Math.max(
+      0,
+      Math.ceil(milliseconds / 1000)
+    );
+
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    return isEnglish()
+      ? `${minutes}:${String(seconds).padStart(2, "0")}`
+      : `${minutes}:${String(seconds).padStart(2, "0")}`;
+  }
+
+  function updateLockUI() {
+    const remaining = getLockUntil() - Date.now();
+
+    if (remaining <= 0) {
+      resetAttempts();
+      setStatus(t("lockExpired"), "info");
+      submit.textContent = t("submit");
+      return false;
+    }
+
+    input.disabled = true;
+    submit.disabled = true;
+    submit.textContent = t("locked");
+
+    setStatus(
+      `${t("locked")} ${t("lockRemaining")} ${formatLockRemaining(remaining)}`,
+      "error"
+    );
+
+    return true;
+  }
+
+  function startLock() {
+    localStorage.setItem(
+      LOCK_KEY,
+      String(Date.now() + LOCK_DURATION)
+    );
+
+    saveFailedAttempts(MAX_ATTEMPTS);
+
+    updateLockUI();
+
+    if (lockTimer !== null) {
+      clearInterval(lockTimer);
+    }
+
+    lockTimer = setInterval(() => {
+      const stillLocked = updateLockUI();
+
+      if (!stillLocked) {
+        clearInterval(lockTimer);
+        lockTimer = null;
+      }
+    }, 1000);
+  }
+
+  function recordFailedAttempt() {
+    const attempts = getFailedAttempts() + 1;
+
+    if (attempts >= MAX_ATTEMPTS) {
+      startLock();
+      return;
+    }
+
+    saveFailedAttempts(attempts);
+
+    const remaining = MAX_ATTEMPTS - attempts;
+
+    setStatus(
+      `${t("invalid")} ${t("attemptsRemaining")}: ${remaining}`,
+      "error"
+    );
+  }
+
+  function initializeLock() {
+    if (isLocked()) {
+      updateLockUI();
+
+      lockTimer = setInterval(() => {
+        const stillLocked = updateLockUI();
+
+        if (!stillLocked) {
+          clearInterval(lockTimer);
+          lockTimer = null;
+        }
+      }, 1000);
+
+      return;
+    }
+
+    if (getLockUntil() > 0) {
+      resetAttempts();
+    }
+  }
+
+  /* ---------- إنشاء التنسيقات ---------- */
+
+  const style = document.createElement("style");
+
+  style.textContent = `
+    #purchases {
+      position: relative;
+      padding: 100px 20px;
+      scroll-margin-top: 90px;
+    }
+
+    #purchases .purchases-inner {
+      width: min(100%, 760px);
+      margin: 0 auto;
+    }
+
+    #purchases .purchases-heading {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    #purchases .purchases-heading h2 {
+      margin: 0 0 14px;
+      font-size: clamp(30px, 5vw, 44px);
+      font-weight: 800;
+      color: var(--text, #fff);
+    }
+
+    #purchases .purchases-heading p {
+      max-width: 540px;
+      margin: 0 auto;
+      line-height: 1.9;
+      color: var(--muted, #b9b0c9);
+    }
+
+    #purchases .purchases-card {
+      padding: clamp(22px, 5vw, 38px);
+      border: 1px solid rgba(210, 155, 255, .2);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, .035);
+      box-shadow: 0 20px 65px rgba(0, 0, 0, .14);
+      backdrop-filter: blur(12px);
+    }
+
+    #purchases .purchases-label {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--text, #fff);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    #purchases .purchases-input {
+      width: 100%;
+      min-height: 54px;
+      padding: 14px 16px;
+      border-radius: 13px;
+      border: 1px solid rgba(210, 155, 255, .25);
+      outline: none;
+      background: rgba(0, 0, 0, .15);
+      color: var(--text, #fff);
+      font: inherit;
+      direction: ltr;
+      text-align: left;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    #purchases .purchases-input:focus {
+      border-color: #d9a3ff;
+      box-shadow: 0 0 0 3px rgba(217, 163, 255, .12);
+    }
+
+    #purchases .purchases-input::placeholder {
+      color: #a49aaf;
+    }
+
+    #purchases .purchases-submit,
+    #purchases .purchases-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 52px;
+      margin-top: 16px;
+      padding: 13px 20px;
+      border: 0;
+      border-radius: 13px;
+      background: linear-gradient(110deg, #d9a3ff, #f1b5d7);
+      color: #24142e;
+      font: inherit;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .2s, opacity .2s;
+    }
+
+    #purchases .purchases-submit:hover,
+    #purchases .purchases-action:hover {
+      transform: translateY(-2px);
+    }
+
+    #purchases .purchases-submit:disabled {
+      cursor: not-allowed;
+      opacity: .65;
+      transform: none;
+    }
+
+    #purchases .purchases-status {
+      margin-top: 18px;
+      line-height: 1.8;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    #purchases .purchases-status:empty {
+      display: none;
+    }
+
+    #purchases .purchases-status.error {
+      color: #ff9caa;
+    }
+
+    #purchases .purchases-status.info {
+      color: var(--muted, #d0c4dc);
+    }
+
+    #purchases .purchases-result {
+      margin-top: 22px;
+      padding: 22px;
+      border-radius: 18px;
+      border: 1px solid rgba(210, 155, 255, .22);
+      background: rgba(180, 120, 220, .06);
+    }
+
+    #purchases .purchases-result h3 {
+      margin: 0 0 18px;
+      font-size: 22px;
+      color: var(--text, #fff);
+    }
+
+    #purchases .purchases-detail {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 16px 0;
+      line-height: 1.7;
+    }
+
+    #purchases .purchases-detail span {
+      color: var(--muted, #b9b0c9);
+      font-size: 13px;
+    }
+
+    #purchases .purchases-detail strong {
+      color: var(--text, #fff);
+      overflow-wrap: anywhere;
+    }
+
+    #purchases .purchases-expired {
+      border-color: rgba(255, 180, 120, .25);
+    }
+
+    #purchases .purchases-expired p {
+      line-height: 1.9;
+      color: var(--muted, #d0c4dc);
+    }
+
+    #purchases .purchases-expired strong {
+      color: #e9b7ff;
+    }
+
+    body.light-mode #purchases .purchases-heading h2,
+    body.light-mode #purchases .purchases-label,
+    body.light-mode #purchases .purchases-result h3,
+    body.light-mode #purchases .purchases-detail strong {
+      color: #291b39;
+    }
+
+    body.light-mode #purchases .purchases-heading p,
+    body.light-mode #purchases .purchases-detail span,
+    body.light-mode #purchases .purchases-expired p {
+      color: #6f617d;
+    }
+
+    body.light-mode #purchases .purchases-card {
+      background: rgba(255, 255, 255, .8);
+      border-color: rgba(130, 80, 160, .16);
+      box-shadow: 0 18px 55px rgba(75, 35, 100, .08);
+    }
+
+    body.light-mode #purchases .purchases-input {
+      background: #fff;
+      color: #291b39;
+      border-color: rgba(130, 80, 160, .25);
+    }
+
+    body.light-mode #purchases .purchases-result {
+      background: rgba(170, 120, 200, .06);
+    }
+
+    body.light-mode #purchases .purchases-status.info {
+      color: #6f617d;
+    }
+
+    body.light-mode #purchases .purchases-expired strong {
+      color: #8c43aa;
+    }
+
+    @media (max-width: 620px) {
+      #purchases {
+        padding: 72px 16px;
+      }
+
+      #purchases .purchases-card {
+        border-radius: 19px;
+      }
+
+      #purchases .purchases-result {
+        padding: 17px;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+
+  /* ---------- إضافة رابط مشترياتي للقائمة ---------- */
+
+  const nav = document.querySelector(".nav");
+
+  if (nav && !nav.querySelector("[data-purchases-link]")) {
+    const navLink = document.createElement("a");
+
+    navLink.href = "#purchases";
+    navLink.dataset.purchasesLink = "true";
+    navLink.textContent = t("nav");
+
+    navLink.addEventListener("click", () => {
+      const panel = document.getElementById("settingsPanel");
+      const toggle = document.getElementById("settingsToggle");
+
+      if (panel) panel.classList.remove("open");
+      if (toggle) toggle.setAttribute("aria-expanded", "false");
+    });
+
+    nav.appendChild(navLink);
+  }
+
+  /* ---------- إنشاء قسم مشترياتي ---------- */
+
+  if (document.getElementById("purchases")) return;
+
+  const section = document.createElement("section");
+
+  section.id = "purchases";
+  section.className = "section";
+
+  section.innerHTML = `
+    <div class="purchases-inner">
+      <div class="purchases-heading">
+        <h2 data-purchases-title></h2>
+        <p data-purchases-subtitle></p>
+      </div>
+
+      <div class="purchases-card">
+        <form id="purchasesForm" novalidate>
+          <label class="purchases-label" for="purchasesCode"
+                 data-purchases-label></label>
+
+          <input
+            id="purchasesCode"
+            class="purchases-input"
+            name="code"
+            type="text"
+            minlength="8"
+            maxlength="100"
+            autocomplete="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            required
+            placeholder=""
+            aria-describedby="purchasesStatus"
+          >
+
+          <button class="purchases-submit" id="purchasesSubmit"
+                  type="submit"></button>
+        </form>
+
+        <div
+          class="purchases-status"
+          id="purchasesStatus"
+          role="status"
+          aria-live="polite"
+        ></div>
+
+        <div id="purchasesResult" aria-live="polite"></div>
+      </div>
+    </div>
+  `;
+
+  const main = document.querySelector("main");
+  const contact = document.querySelector("#contact");
+  const how = document.querySelector("#how");
+
+  if (main) {
+    if (contact && main.contains(contact)) {
+      main.insertBefore(section, contact);
+    } else if (how && main.contains(how)) {
+      how.insertAdjacentElement("afterend", section);
+    } else {
+      main.appendChild(section);
+    }
+  } else {
+    document.body.appendChild(section);
+  }
+
+  const form = document.getElementById("purchasesForm");
+  const input = document.getElementById("purchasesCode");
+  const submit = document.getElementById("purchasesSubmit");
+  const statusBox = document.getElementById("purchasesStatus");
+  const resultBox = document.getElementById("purchasesResult");
+
+  /* ---------- أدوات عرض آمنة ---------- */
+
+  function makeElement(tag, className, text) {
+    const element = document.createElement(tag);
+
+    if (className) element.className = className;
+    if (text !== undefined) element.textContent = text;
+
+    return element;
+  }
+
+  function addDetail(parent, label, value) {
+    const detail = makeElement("div", "purchases-detail");
+    detail.appendChild(makeElement("span", "", label));
+    detail.appendChild(makeElement("strong", "", value));
+    parent.appendChild(detail);
+  }
+
+  function setStatus(message, type = "info") {
+    statusBox.textContent = message;
+    statusBox.className = "purchases-status " + type;
+  }
+
+  function clearTimer() {
+    if (activeTimer !== null) {
+      clearInterval(activeTimer);
+      activeTimer = null;
+    }
+  }
+
+  function formatDate(value) {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return "—";
+    }
+
+    return new Intl.DateTimeFormat(
+      isEnglish() ? "en" : "ar-EG",
+      {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      }
+    ).format(date);
+  }
+
+  function formatRemaining(expiresAt) {
+    const difference = new Date(expiresAt).getTime() - Date.now();
+
+    if (!Number.isFinite(difference) || difference <= 0) {
+      return null;
+    }
+
+    const totalSeconds = Math.floor(difference / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (days > 0) {
+      return `${days} ${t("days")}، ${hours} ${t("hours")}`;
+    }
+
+    if (hours > 0) {
+      return `${hours} ${t("hours")}، ${minutes} ${t("minutes")}`;
+    }
+
+    if (minutes > 0) {
+      return `${minutes} ${t("minutes")}، ${seconds} ${t("seconds")}`;
+    }
+
+    if (seconds > 0) {
+      return `${seconds} ${t("seconds")}`;
+    }
+
+    return t("lessThanMinute");
+  }
+
+  function showExpired(data) {
+    clearTimer();
+    resultBox.replaceChildren();
+
+    const card = makeElement(
+      "div",
+      "purchases-result purchases-expired"
+    );
+
+    card.appendChild(makeElement("h3", "", t("expiredTitle")));
+
+    if (data.template_name) {
+      addDetail(card, t("design"), data.template_name);
+    }
+
+    card.appendChild(makeElement("p", "", t("expiredText")));
+
+    const discount = makeElement("p");
+    discount.appendChild(makeElement("strong", "", "30%"));
+    card.appendChild(discount);
+
+    const renewButton = makeElement(
+      "button",
+      "purchases-action",
+      t("renew")
+    );
+
+    renewButton.type = "button";
+
+    renewButton.addEventListener("click", () => {
+      const message = isEnglish()
+        ? "Hello 4U celebrations, I'm a returning customer and would like to renew my expired gift website with the 30% returning-customer discount."
+        : "أهلًا 4U celebrations، أنا عميل سابق وموقعي انتهت صلاحيته وعايز أجدد طلبي بخصم الـ30% المخصص للعملاء السابقين.";
+
+      if (typeof openWhatsApp === "function") {
+        openWhatsApp(message);
+      } else {
+        window.open(
+          "https://wa.me/" + CONFIG.whatsappNumber +
+          "?text=" + encodeURIComponent(message),
+          "_blank",
+          "noopener,noreferrer"
+        );
+      }
+    });
+
+    card.appendChild(renewButton);
+    resultBox.appendChild(card);
+  }
+
+  function showActive(data) {
+    clearTimer();
+    resultBox.replaceChildren();
+
+    const card = makeElement("div", "purchases-result");
+    card.appendChild(makeElement("h3", "", t("active")));
+
+    addDetail(card, t("design"), data.template_name || "4U celebrations");
+    addDetail(card, t("expires"), formatDate(data.expires_at));
+
+    const remaining = makeElement("div", "purchases-detail");
+    remaining.appendChild(makeElement("span", "", t("remaining")));
+
+    const remainingValue = makeElement("strong", "");
+    remaining.appendChild(remainingValue);
+    card.appendChild(remaining);
+
+    let giftLink = null;
+
+    try {
+      const parsed = new URL(data.page_url);
+
+      if (parsed.protocol === "https:") {
+        giftLink = makeElement("a", "purchases-action", t("open"));
+        giftLink.href = parsed.href;
+        giftLink.target = "_blank";
+        giftLink.rel = "noopener noreferrer";
+      }
+    } catch {
+      giftLink = null;
+    }
+
+    if (giftLink) {
+      card.appendChild(giftLink);
+    } else {
+      setStatus(t("invalidResponse"), "error");
+    }
+
+    resultBox.appendChild(card);
+
+    function updateRemaining() {
+      const value = formatRemaining(data.expires_at);
+
+      if (value === null) {
+        clearTimer();
+        showExpired({ template_name: data.template_name });
+        return;
+      }
+
+      remainingValue.textContent = value;
+    }
+
+    updateRemaining();
+
+    if (activeTimer === null) {
+      activeTimer = setInterval(updateRemaining, 1000);
+    }
+  }
+
+  function renderResult(data) {
+    if (!data || typeof data !== "object") {
+      setStatus(t("invalidResponse"), "error");
+      return;
+    }
+
+    if (data.status === "active") {
+      showActive(data);
+      return;
+    }
+
+    if (data.status === "expired") {
+      showExpired(data);
+      return;
+    }
+
+    setStatus(t("invalidResponse"), "error");
+  }
+
+  /* ---------- إرسال كود الدخول إلى Supabase ---------- */
+
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    if (currentRequest || isLocked()) {
+      if (isLocked()) updateLockUI();
+      return;
+    }
+
+    const code = input.value.trim();
+
+    resultBox.replaceChildren();
+    clearTimer();
+    lastResult = null;
+
+    if (!/^[A-Za-z0-9-]{8,100}$/.test(code)) {
+      recordFailedAttempt();
+
+      if (!isLocked()) {
+        setStatus(
+          `${t("invalid")} ${t("attemptsRemaining")}: ${MAX_ATTEMPTS - getFailedAttempts()}`,
+          "error"
+        );
+      }
+
+      input.focus();
+      return;
+    }
+
+    currentRequest = true;
+    submit.disabled = true;
+    submit.textContent = t("loading");
+    setStatus(t("loading"), "info");
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ code })
+      });
+
+      let data;
+
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error("invalid_response");
+      }
+
+      if (response.status === 400 || response.status === 404) {
+        recordFailedAttempt();
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error("server_error");
+      }
+
+      if (data && (data.status === "active" || data.status === "expired")) {
+        resetAttempts();
+        lastResult = data;
+        statusBox.textContent = "";
+        renderResult(data);
+      } else {
+        setStatus(t("invalidResponse"), "error");
+      }
+
+    } catch (error) {
+      console.error("4U purchases lookup failed:", error);
+
+      if (error && error.message === "invalid_response") {
+        setStatus(t("invalidResponse"), "error");
+      } else if (error instanceof TypeError) {
+        setStatus(t("networkError"), "error");
+      } else {
+        setStatus(t("serverError"), "error");
+      }
+
+    } finally {
+      currentRequest = false;
+
+      if (!isLocked()) {
+        submit.disabled = false;
+        input.disabled = false;
+        submit.textContent = t("submit");
+      } else {
+        updateLockUI();
+      }
+    }
+  });
+
+  /* ---------- دعم تغيير اللغة ---------- */
+
+  function updatePurchasesLanguage() {
+    const english = isEnglish();
+
+    const title = section.querySelector("[data-purchases-title]");
+    const subtitle = section.querySelector("[data-purchases-subtitle]");
+    const label = section.querySelector("[data-purchases-label]");
+
+    if (title) title.textContent = t("title");
+    if (subtitle) subtitle.textContent = t("subtitle");
+    if (label) label.textContent = t("label");
+
+    input.placeholder = t("placeholder");
+
+    const navLink = document.querySelector("[data-purchases-link]");
+
+    if (navLink) {
+      navLink.textContent = t("nav");
+    }
+
+    if (isLocked()) {
+      updateLockUI();
+    } else {
+      submit.textContent = currentRequest ? t("loading") : t("submit");
+    }
+
+    if (lastResult) {
+      statusBox.textContent = "";
+      renderResult(lastResult);
+    } else if (!isLocked() && statusBox.textContent) {
+      const currentMessage = statusBox.textContent;
+
+      if (
+        currentMessage === words.ar.invalid ||
+        currentMessage === words.en.invalid
+      ) {
+        setStatus(t("invalid"), "error");
+      } else if (
+        currentMessage === words.ar.networkError ||
+        currentMessage === words.en.networkError
+      ) {
+        setStatus(t("networkError"), "error");
+      } else if (
+        currentMessage === words.ar.serverError ||
+        currentMessage === words.en.serverError
+      ) {
+        setStatus(t("serverError"), "error");
+      } else if (
+        currentMessage === words.ar.loading ||
+        currentMessage === words.en.loading
+      ) {
+        setStatus(t("loading"), "info");
+      }
+    }
+  }
+
+  document.querySelectorAll("[data-language]").forEach(button => {
+    button.addEventListener("click", updatePurchasesLanguage);
+  });
+
+  updatePurchasesLanguage();
+  initializeLock();
 
 })();
