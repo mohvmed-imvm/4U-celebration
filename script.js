@@ -77,14 +77,30 @@ const templates = [
     miniBrand: "OUR STORY",
     previewTitle: "Forever Us",
     previewCaption: "Every moment means something",
-    theme: "theme-anniversary",
+    theme: "theme-anniversary-1",
     type: "ذكرى خاصة",
     url: "https://mohvmed-imvm.github.io/ValentineDay-1/",
     message: "عايز أطلب تصميم ذكرى حب أو عيد جواز"
   },
   {
-    id: "anniversaryy",
+    id: "anniversaryyy",
     number: "04",
+    title: "فلانتاين",
+    category: "love",
+    categoryName: "اعياد حب",
+    description: "تصميم رومانسي للذكرى السنوية أو عيد الجواز، برسالة وصور وتفاصيل خاصة.",
+    emoji: "🌹",
+    miniBrand: "OUR STORY",
+    previewTitle: "♡Us, Always",
+    previewCaption: "Every moment means something",
+    theme: "theme-anniversary-2",
+    type: "ذكرى خاصة",
+    url: "https://mohvmed-imvm.github.io/ValentineDay-2/",
+    message: "عايز أطلب تصميم ذكرى حب أو عيد جواز"
+  },
+  {
+    id: "anniversaryy",
+    number: "05",
     title: "عيد حب",
     category: "love",
     categoryName: "اعياد حب",
@@ -93,15 +109,15 @@ const templates = [
     miniBrand: "OUR STORY",
     previewTitle: "♡Us, Always",
     previewCaption: "Every moment means something",
-    theme: "theme-custom",
+    theme: "theme-anniversary-3",
     type: "ذكرى خاصة",
-    url: "https://mohvmed-imvm.github.io/ValentineDay-2/",
+    url: "https://mohvmed-imvm.github.io/ValentineDay-3/",
     message: "عايز أطلب تصميم ذكرى حب أو عيد جواز"
   },
   {
-    id: "graduation",
-    number: "05",
-    title: "التخرج والنجاح",
+    id: "graduationn",
+    number: "06",
+    title: "تخرج ولد",
     category: "achievement",
     categoryName: "الإنجازات",
     description: "احتفال رقمي بإنجاز يستاهل، بتصميم يعبر عن الفرحة والفخر بالنجاح.",
@@ -109,11 +125,27 @@ const templates = [
     miniBrand: "YOU DID IT",
     previewTitle: "The Next Chapter",
     previewCaption: "Your hard work deserves a moment",
-    theme: "theme-graduation",
+    theme: "theme-graduation-boy",
     type: "إنجاز مهم",
-    url: "https://mohvmed-imvm.github.io/SOON/",
+    url: "https://mohvmed-imvm.github.io/GraduationBoy-1/",
     message: "عايز أطلب تصميم تخرج أو نجاح"
-  }
+  },
+  {
+    id: "graduation",
+    number: "07",
+    title: "تخرج بنت",
+    category: "achievement",
+    categoryName: "الإنجازات",
+    description: "احتفال رقمي بإنجاز يستاهل، بتصميم يعبر عن الفرحة والفخر بالنجاح.",
+    emoji: "🎓",
+    miniBrand: "YOU DID IT",
+    previewTitle: "The Next Chapter",
+    previewCaption: "Your hard work deserves a moment",
+    theme: "theme-graduation-girl",
+    type: "إنجاز مهم",
+    url: "https://mohvmed-imvm.github.io/GraduationGirl-1/",
+    message: "عايز أطلب تصميم تخرج أو نجاح"
+  },
 ];
 
 
@@ -647,10 +679,25 @@ observeReveals();
       message: "عايز أطلب تصميم ذكرى حب أو عيد جواز"
     },
 
+    anniversaryyy: {
+      title: "فلانتاين",
+      categoryName: "اعياد حب",
+      description: "هديه فلانتاين هاديه وجواب برساله خاصه",
+      type: "ذكرى خاصة",
+      message: "عايز أطلب تصميم ذكرى حب أو عيد جواز"
+    },
+
     graduation: {
-      title: "التخرج والنجاح",
+      title: "تخرج بنت",
       categoryName: "الإنجازات",
-      description: "احتفال رقمي بإنجاز يستاهل، بتصميم يعبر عن الفرحة والفخر بالنجاح.",
+      description: "هديه لتخرج بنت, كتاب صفحاته عباره عن صورها ورسايل ليها من تخصبصك",
+      type: "إنجاز مهم",
+      message: "عايز أطلب تصميم تخرج أو نجاح"
+    },
+    graduationn: {
+      title: "تخرج ولد",
+      categoryName: "الإنجازات",
+      description: "هديه تخرج لولد, شريط من 0 ل 100 بيدل ع اتمام انجازاته ورسايل للاحتفال به",
       type: "إنجاز مهم",
       message: "عايز أطلب تصميم تخرج أو نجاح"
     }
@@ -2260,4 +2307,3 @@ if (lightLabel) {
   initializeLock();
 
 })();
-
