@@ -738,12 +738,24 @@
       background: linear-gradient(145deg, #512344, #a34d80 55%, #32152f);
     }
 
-    .theme-anniversary {
+    .theme-anniversary-1 {
       background: linear-gradient(145deg, #302143, #6f466d 55%, #26152e);
     }
 
-    .theme-graduation {
+    .theme-anniversary-2 {
+      background: linear-gradient(145deg, #422143, #6f465a 55%, #2e151e);
+    }
+
+    .theme-anniversary-3 {
+      background: linear-gradient(145deg, #d60d1a, #8a4044 55%, #5c0109);
+    }
+
+    .theme-graduation-boy {
       background: linear-gradient(145deg, #142e43, #37627b 55%, #19243b);
+    }
+
+    .theme-graduation-girl {
+      background: linear-gradient(145deg, #43142f, #7b3750 55%, #3b1921);
     }
 
     .theme-birthday-boy {
